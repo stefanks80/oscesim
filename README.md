@@ -4,9 +4,11 @@ A simulation framework for studying the psychometric properties of Objective Str
 
 ---
 
-## Disclaimer
+## Disclaimer on use of generative AI
 
-*This README was generated with the assistance of Claude AI (Anthropic). The simulation code was developed by the authors.*
+This README was generated with the assistance of Claude AI (Anthropic) and proof-read for correctness by the authors.
+
+All simulation logic, code, and assumptions made were developed by the authors. This includes all code except the functions in the table_osce.R script, which as generated with assistance of Claude Sonnet 4.6, which was also used to document functions.
 
 ---
 
