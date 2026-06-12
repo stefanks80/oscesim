@@ -4,6 +4,12 @@ A simulation framework for studying the psychometric properties of Objective Str
 
 ---
 
+## Disclaimer
+
+*This README was generated with the assistance of Claude AI (Anthropic). The simulation code was developed by the authors.*
+
+---
+
 ## Background
 
 OSCEs are widely used in health professions education to assess clinical competence. Each candidate rotates through a series of stations, and at each station one or more examiners rate their performance. The resulting scores reflect not only the candidate's true ability but also systematic and random variation introduced by the specific stations and examiners encountered — a measurement problem well-suited to Generalizability Theory (G-theory).
@@ -42,6 +48,39 @@ The Beta distribution is a natural choice for generating scores and score-like q
 - The theoretical mean is α / (α + β) and the variance is αβ / [(α + β)²(α + β + 1)], so both the location and spread of the distribution can be controlled by choosing α and β appropriately.
 
 In the simulation, shape parameters are specified separately for each facet (candidates, stations, examiners, residual error), allowing the researcher to calibrate each source of variation to match empirical data or a theoretical scenario of interest.
+
+### Deriving α and β from a target mean and standard deviation
+
+Because the Beta distribution has two free parameters, it can be matched to any desired mean (μ) and standard deviation (σ) on the (0, 1) interval via the method of moments. The key quantity is the **concentration** κ = α + β, which controls how tightly the distribution is clustered around its mean:
+
+```
+κ = μ(1 − μ) / σ² − 1
+α = μ · κ
+β = (1 − μ) · κ
+```
+
+For the **candidate true-score** facet, μ and σ are chosen to reproduce the empirical pass-rate and score spread on the 0–100 scale (divide target mean and SD by 100 before applying the formulas). For the **effect** facets (stations, examiners, error), the draws are mean-centred after sampling, so μ cancels out; only σ governs the magnitude of variation, and any convenient symmetric parameterisation (α = β) is sufficient.
+
+The table below shows the default shape parameters and their implied score-scale properties. Effect facets are reported as SD of the mean-centred, ×100-rescaled draw; candidate scores are reported as mean and SD on the 0–100 scale.
+
+| Facet | α | β | Implied mean (0–100) | Implied SD (0–100) |
+|---|---|---|---|---|
+| Candidates | 39 | 13 | 75.0 | 5.9 |
+| Stations | 62 | 62 | — (centred) | 4.5 |
+| Examiners | 25 | 25 | — (centred) | 7.0 |
+| Residual error | 5 | 5 | — (centred) | 15.1 |
+
+These defaults correspond to a moderately high-scoring cohort (mean ≈ 75), tight station difficulty variation, moderate examiner stringency variation, and relatively large within-cell residual noise — a plausible representation of a typical postgraduate OSCE.
+
+The helper script `beta_params.R` implements these formulas directly. Call `beta_params()` with a target mean and SD on the 0–100 scale and it returns the corresponding α and β, prints a verification check, and optionally plots the resulting density:
+
+```r
+source("beta_params.R")
+
+beta_params(mean = 75, sd = 6,  label = "Candidates")
+beta_params(mean = 50, sd = 7,  label = "Examiners")
+beta_params(mean = 50, sd = 15, label = "Residual error", plot = TRUE)
+```
 
 ### Standard setting: Borderline Regression Method
 
@@ -141,5 +180,3 @@ Simulation studies are run as full factorial designs in which one or more design
 - **officer** — Word document export
 
 ---
-
-*This README was generated with the assistance of Claude AI (Anthropic). The simulation code and methods were developed by the project authors.*
